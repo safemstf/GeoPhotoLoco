@@ -6,6 +6,7 @@ import json
 from torchvision import transforms
 from torch.utils.data import Dataset, DataLoader
 
+# training parameters
 NUM_EPOCHS = 10
 BATCH_SIZE = 32
 
@@ -40,14 +41,12 @@ class ImageDataset(Dataset):
 
     def __getitem__(self, idx):
         image_key = list(self.data.keys())[idx]
+        item = self.data[image_key]
         image = torch.tensor(self.data[image_key])
+
+        coord = torch.tensor(item['location']['coord'])
         country = torch.tensor(item['location']['country'])
         region = torch.tensor(item['location']['region'])
-
-        # Extracting latitude and longitude from the filename
-        _, lat_lon = image_key.split('_')
-        lat, lon = lat_lon[:-4].split(',')
-        coord = torch.tensor([float(lat), float(lon)])
 
         if self.transform:
             image = self.transform(image)
@@ -56,8 +55,17 @@ class ImageDataset(Dataset):
 
 
 # loss function
-# todo: modify the distance loss for better usage and calculation
-# todo: hierarchical classification gain/loss
+# todo: modify loss function based on training results
+
+# loss functions for coord, country, and city/region
+def country_loss_fn(output, target):
+    return nn.CrossEntropyLoss()(output, target)
+
+
+def region_loss_fn(output, target):
+    return nn.CrossEntropyLoss()(output, target)
+
+
 def distance_loss(output, target):
     return torch.sqrt(torch.sum((output - target) ** 2, dim=1)).mean()
 
@@ -105,8 +113,8 @@ for epoch in range(NUM_EPOCHS):
         country_pred, region_pred, coord_pred = model(images)
 
         # Calculate loss for each task and combine them
-        country_loss = country_loss_fn(country_pred, countries)  # todo: Define country loss function
-        city_loss = region_loss_fn(region_pred, cities)  # todo: Define region loss function
+        country_loss = country_loss_fn(country_pred, countries)
+        city_loss = region_loss_fn(region_pred, cities)
         coord_loss = distance_loss(coord_pred, coords)
         total_loss = country_loss + city_loss + coord_loss
 
