@@ -35,7 +35,7 @@ def process_image(img_path):
 
 # loops through a folder of images with a given batch size to create a json file.
 # the images from process_images_in_folder are run through process_image(img_path)
-def process_images_in_folder(folder_path, json_base_path, BatchSize=500):
+def process_images_in_folder(folder_path, json_base_path, BatchSize=1024):
     processed_data = {}
     BatchNuber = 1
     index = 0
@@ -48,6 +48,7 @@ def process_images_in_folder(folder_path, json_base_path, BatchSize=500):
         processed_tensors = process_image(img_path).tolist()
 
         # Extract coordinates from filename (may need to change with different data files)
+        # change here to lat_lon from csv or whatever needed
         lat_lon = filename.rsplit('.', 1)[0]
         lat, lon = map(float, lat_lon.split(','))
         country, region = find_country_region(lat, lon, bbox_df)

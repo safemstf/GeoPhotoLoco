@@ -1,10 +1,15 @@
+import matplotlib.pyplot as plt
+import torch.optim as optim
+import seaborn as sns
 import torch
 import os
+
+from sklearn.metrics import confusion_matrix, accuracy_score, precision_score, recall_score, f1_score
 from Net import CNNModel, region_loss_fn, country_loss_fn, distance_loss, ImageDataset
-from torchvision import transforms
 from torch.utils.data import DataLoader
-import torch.optim as optim
+from torchvision import transforms
 from tqdm import tqdm
+from Evaluation import Evaluate_Model
 
 # Parameters
 NUM_EPOCHS = 10
@@ -26,6 +31,10 @@ dataloader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True)
 
 print("Data Loaded, starting Training...")
 
+# Lists for evaluation data
+true_countries, pred_countries = [], []
+true_regions, pred_regions = [], []
+
 
 # Training loop
 def TrainGeoPhotoLoco(resume=False):
@@ -44,13 +53,19 @@ def TrainGeoPhotoLoco(resume=False):
             region_loss = region_loss_fn(region_pred, cities)
             coord_loss = distance_loss(coord_pred, coords)
 
-            print(f'Distance Loss: {distance_loss(coord_pred, coords)}, Coord Loss: {coord_loss}, '
+            print(f'Distance Loss: {distance_loss(coord_pred, coords)}, '
                   f'Country Loss: {country_loss},'
                   f' region_loss: {region_loss}')
 
             total_loss = country_loss + region_loss + coord_loss
             total_loss.backward()
             optimizer.step()
+
+            # append for evaluation
+            true_countries.extend(countries.tolist())
+            pred_countries.extend(torch.argmax(country_pred, dim=1).tolist())
+            true_regions.extend(cities.tolist())
+            pred_regions.extend(torch.argmax(region_pred, dim=1).tolist())
 
         print(f'Epoch {epoch + 1}, Loss: {total_loss.item()}')
 
@@ -60,3 +75,4 @@ def TrainGeoPhotoLoco(resume=False):
 
 if __name__ == "__main__":
     TrainGeoPhotoLoco(resume=True)
+Evaluate_Model(true_countries, pred_countries, true_regions, pred_regions)

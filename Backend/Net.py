@@ -1,9 +1,10 @@
 import torch
 import torch.nn as nn
 import json
-from tqdm import tqdm
 import csv
+from tqdm import tqdm
 from torch.utils.data import Dataset
+from math import radians, cos, sin, asin, sqrt
 
 
 # # transform options:
@@ -66,10 +67,6 @@ class ImageDataset(Dataset):
 
         return image, coord, country, region
 
-
-# loss function
-# todo: modify loss function based on training results
-
 # loss functions for coord, country, and city/region
 def country_loss_fn(output, target):
     return nn.CrossEntropyLoss()(output, target)
@@ -79,9 +76,31 @@ def region_loss_fn(output, target):
     return nn.CrossEntropyLoss()(output, target)
 
 
-# todo: convert loss to meters to tell distance
+# distance formula in meters
+def haversine(lon1, lat1, lon2, lat2):
+    # convert decimal degrees to radians
+    lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
+
+    # haversine formula
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1
+    a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
+    c = 2 * asin(sqrt(a))
+    r = 6371  # radius of earth in kilometers.
+    return c * r
+
+
 def distance_loss(output, target):
-    return torch.sqrt(torch.sum((output - target) ** 2, dim=1)).mean()
+    batch_size = output.shape[0]
+    total_loss = 0
+
+    for i in range(batch_size):
+        pred_lon, pred_lat = output[i][0].item(), output[i][1].item()
+        true_lon, true_lat = target[i][0].item(), target[i][1].item()
+        # squared for larger loss on larger values
+        total_loss += haversine(pred_lon, pred_lat, true_lon, true_lat)
+
+    return total_loss / (batch_size * 7550)
 
 
 # CNN model
