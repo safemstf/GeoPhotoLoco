@@ -1,14 +1,9 @@
 import torch
 import torch.nn as nn
-import torch.optim as optim
-import pandas as pd
 import json
-from torchvision import transforms
-from torch.utils.data import Dataset, DataLoader
-
-# training parameters
-NUM_EPOCHS = 10
-BATCH_SIZE = 32
+from tqdm import tqdm
+import csv
+from torch.utils.data import Dataset
 
 
 # # transform options:
@@ -28,28 +23,46 @@ BATCH_SIZE = 32
 # Transforms can be composed using
 # transforms.Compose([transforms]), where transforms is a list of transformations applied sequentially.
 
+def load_csv_to_dict(file_path):
+    with open(file_path, mode='r', encoding='utf-8') as csvfile:
+        reader = csv.reader(csvfile)
+        next(reader, None)  # Skip the header
+        return {rows[0]: int(rows[1]) for rows in reader}
+
+
+# Load the CSV files
+country_to_idx = load_csv_to_dict('country_indices.csv')
+region_to_idx = load_csv_to_dict('region_indices.csv')
+
 
 # dataset
 class ImageDataset(Dataset):
     def __init__(self, json_file, transform=None):
         with open(json_file, 'r') as file:
-            self.data = json.load(file)
+            data = json.load(file)
+
+        self.data = {}
+        for key in tqdm(data.keys(), desc="Loading Data"):
+            item = data[key]
+            self.data[key] = {
+                'tensors': torch.tensor(item['tensors']),
+                'coord': torch.tensor(item['location']['coord']),
+                'country': country_to_idx.get(item['location']['country'], 253),  # 253 is unknown
+                'region': region_to_idx.get(item['location']['region'], 4440)  # 4440 is unknown
+            }
+
         self.transform = transform
 
     def __len__(self):
         return len(self.data)
 
     def __getitem__(self, idx):
-        image_key = list(self.data.keys())[idx]
-        item = self.data[image_key]
-        image = torch.tensor(self.data[image_key])
+        item = self.data[list(self.data.keys())[idx]]
 
-        coord = torch.tensor(item['location']['coord'])
-        country = torch.tensor(item['location']['country'])
-        region = torch.tensor(item['location']['region'])
-
-        if self.transform:
-            image = self.transform(image)
+        image = item['tensors'].permute(2, 0, 1)
+        coord = item['coord']
+        country = item['country']
+        region = item['region']
 
         return image, coord, country, region
 
@@ -66,6 +79,7 @@ def region_loss_fn(output, target):
     return nn.CrossEntropyLoss()(output, target)
 
 
+# todo: convert loss to meters to tell distance
 def distance_loss(output, target):
     return torch.sqrt(torch.sum((output - target) ** 2, dim=1)).mean()
 
@@ -74,15 +88,16 @@ def distance_loss(output, target):
 class CNNModel(nn.Module):
     def __init__(self):
         super(CNNModel, self).__init__()
+        # kernel_size=3 each filter is 3x3. Odd numbers have a central pixel. Good for spatial reference
         self.conv1 = nn.Conv2d(3, 32, kernel_size=3, stride=1, padding=1)
         self.conv2 = nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=1)
         self.conv3 = nn.Conv2d(64, 64, kernel_size=3, stride=1, padding=1)
 
-        self.fc_country = nn.Linear(64 * 32 * 32, 245)  # num_countries
-        self.fc_city = nn.Linear(64 * 32 * 32, 4447)  # num_cities/regions
+        self.fc_country = nn.Linear(64 * 32 * 32, 254)  # num_countries
+        self.fc_city = nn.Linear(64 * 32 * 32, 4441)  # num_cities/regions
         self.fc_coord = nn.Linear(64 * 32 * 32, 2)
 
-    # todo: see if elu is possible(training time)
+    # todo: see if elu is possible(limitation: training time)
     def forward(self, x):
         x = torch.relu(self.conv1(x))
         x = nn.MaxPool2d(kernel_size=2)(x)
@@ -94,30 +109,3 @@ class CNNModel(nn.Module):
         region_pred = self.fc_city(x)
         coord_pred = self.fc_coord(x)
         return country_pred, region_pred, coord_pred
-
-
-# Load the data
-transform = transforms.Compose([transforms.ToTensor()])  # Include any required transformations
-dataset = ImageDataset('processed_images_batch.json_1.json', transform=transform)
-dataloader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True)
-
-# Initialize the model, optimizer, and loss function
-model = CNNModel()
-optimizer = optim.Adam(model.parameters(), lr=0.001)
-loss_fn = distance_loss
-
-# Training loop
-for epoch in range(NUM_EPOCHS):
-    for images, coords, countries, cities in dataloader:
-        optimizer.zero_grad()
-        country_pred, region_pred, coord_pred = model(images)
-
-        # Calculate loss for each task and combine them
-        country_loss = country_loss_fn(country_pred, countries)
-        city_loss = region_loss_fn(region_pred, cities)
-        coord_loss = distance_loss(coord_pred, coords)
-        total_loss = country_loss + city_loss + coord_loss
-
-        total_loss.backward()
-        optimizer.step()
-    print(f'Epoch {epoch + 1}, Loss: {total_loss.item()}')

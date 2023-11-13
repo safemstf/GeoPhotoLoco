@@ -3,8 +3,6 @@ import json
 import os
 from tqdm import tqdm
 import pandas as pd
-
-# import tensorflow as tf
 import numpy as np
 
 bbox_df = pd.read_csv('BBoxCountriesCities.csv')
@@ -32,22 +30,12 @@ def process_image(img_path):
     img_resized = cv2.resize(img, (128, 128))
     img_rgb = cv2.cvtColor(img_resized, cv2.COLOR_BGR2RGB)
     img_normalized = img_rgb / 255.0
-    grid_size = 1
-    grid_cells = []
-
-    for y in range(0, 128, grid_size):
-        for x in range(0, 128, grid_size):
-            cell = img_normalized[y:y + grid_size, x:x + grid_size]
-            grid_cells.append(cell)
-
-    # Convert grid cells to lists
-    tensors = [cell.tolist() for cell in grid_cells]
-    return tensors
+    return img_normalized
 
 
 # loops through a folder of images with a given batch size to create a json file.
 # the images from process_images_in_folder are run through process_image(img_path)
-def process_images_in_folder(folder_path, json_base_path, BatchSize=2000):
+def process_images_in_folder(folder_path, json_base_path, BatchSize=500):
     processed_data = {}
     BatchNuber = 1
     index = 0
@@ -57,7 +45,7 @@ def process_images_in_folder(folder_path, json_base_path, BatchSize=2000):
 
     for index, filename in enumerate(tqdm(image_files, desc="Processing Images")):
         img_path = os.path.join(folder_path, filename)
-        processed_tensors = process_image(img_path)
+        processed_tensors = process_image(img_path).tolist()
 
         # Extract coordinates from filename (may need to change with different data files)
         lat_lon = filename.rsplit('.', 1)[0]
@@ -89,6 +77,6 @@ def save_to_json(data, json_path):
 
 
 folder_path = r'C:\Users\safem\PycharmProjects\GeoPhotoLoco\streetviews'
-json_base_path = 'processed_images_batch.json'
+json_base_path = 'processed_images_batch'
 
 process_images_in_folder(folder_path, json_base_path)
