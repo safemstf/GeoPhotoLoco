@@ -3,12 +3,14 @@ import json
 import os
 from tqdm import tqdm
 import pandas as pd
+from config_loader import load_config
 import numpy as np
 
 bbox_df = pd.read_csv('BBoxCountriesCities.csv')
 bbox_df.columns = ['Country', 'Region', 'BBox']
+config = load_config(r'C:\Users\safem\PycharmProjects\GeoPhotoLoco\Backend\config.json')
 
-folder_path = r'C:\Users\safem\PycharmProjects\GeoPhotoLoco\Backend\BudapestTagged'  # PC SPECIFIC
+folder_path = config["PROCESS_IMAGES_IN"]  # PC SPECIFIC
 json_base_path = 'processed_images_batchBudapest'
 
 

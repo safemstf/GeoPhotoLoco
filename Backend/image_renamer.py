@@ -1,15 +1,16 @@
 import csv
 import os
-from PIL import Image
+from config_loader import load_config
 
-# Specify the path to your CSV file
-# PC SPECIFIC
-csv_file = r'C:\Users\safem\PycharmProjects\GeoPhotoLoco\Backend\MetaData\train_val\budapest\database\raw.csv'
+config = load_config(r'C:\Users\safem\PycharmProjects\GeoPhotoLoco\Backend\config.json')
+
+# PC SPECIFIC -  Specify the path to your CSV file
+csv_file = config["META_DATA_FILE"]
 
 # images are down one directory from this file
-image_dir = r'C:\Users\safem\PycharmProjects\GeoPhotoLoco\Budapest_Images'  # Update this to your image directory path
+image_dir = config["IMAGES_TO_TAG"]  # Update this to your image directory path
 
-output_dir = r'C:\Users\safem\PycharmProjects\GeoPhotoLoco\Backend\BudapestTagged'  # Update this to your desired output directory
+output_dir = config["IMAGES_TAGGED"]  # Update this to your desired output directory
 
 os.makedirs(output_dir, exist_ok=True)  # Create the output directory if it doesn't already exist
 
