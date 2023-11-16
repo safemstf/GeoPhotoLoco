@@ -113,12 +113,17 @@ def haversine(lon1, lat1, lon2, lat2):
 def distance_loss(output, target):
     batch_size = output.shape[0]
     total_loss = 0
+    penalty_factor = 45075  # Large value penalize circumference of earth
 
     for i in range(batch_size):
         pred_lon, pred_lat = output[i][0].item(), output[i][1].item()
         true_lon, true_lat = target[i][0].item(), target[i][1].item()
-        # squared for larger loss on larger values
-        total_loss += haversine(pred_lon, pred_lat, true_lon, true_lat)
+
+        # Check for out-of-range coordinates
+        if abs(pred_lon) > 180 or abs(pred_lat) > 90:
+            total_loss += penalty_factor + haversine(pred_lon, pred_lat, true_lon, true_lat) ** 2
+        else:
+            total_loss += haversine(pred_lon, pred_lat, true_lon, true_lat)
 
     return total_loss / (batch_size * 100)
 
