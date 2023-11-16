@@ -8,6 +8,9 @@ import numpy as np
 bbox_df = pd.read_csv('BBoxCountriesCities.csv')
 bbox_df.columns = ['Country', 'Region', 'BBox']
 
+folder_path = r'C:\Users\safem\PycharmProjects\GeoPhotoLoco\Backend\BudapestTagged'  # PC SPECIFIC
+json_base_path = 'processed_images_batchBudapest'
+
 
 def point_in_bbox(lat, lon, bbox):
     min_lat, min_lon, max_lat, max_lon = bbox
@@ -35,7 +38,7 @@ def process_image(img_path):
 
 # loops through a folder of images with a given batch size to create a json file.
 # the images from process_images_in_folder are run through process_image(img_path)
-def process_images_in_folder(folder_path, json_base_path, BatchSize=1024):
+def process_images_in_folder(folder_path, json_base_path, BatchSize=2048):
     processed_data = {}
     BatchNuber = 1
     index = 0
@@ -76,8 +79,5 @@ def save_to_json(data, json_path):
     with open(json_path, 'w', encoding='utf-8') as json_file:
         json.dump(data, json_file, ensure_ascii=False, indent=4)
 
-
-folder_path = r'C:\Users\safem\PycharmProjects\GeoPhotoLoco\streetviews'
-json_base_path = 'processed_images_batch'
 
 process_images_in_folder(folder_path, json_base_path)

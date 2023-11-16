@@ -18,5 +18,6 @@ array = reconstructed_tensor.numpy()
 # Rescale the pixel values from [0, 1] to [0, 255]
 array = (array * 255).astype(np.uint8)
 
+# PC SPECIFIC
 # Save the image using OpenCV
 cv2.imwrite('ProcessedImagesVisualized/output_image21_128.png', cv2.cvtColor(array, cv2.COLOR_RGB2BGR))

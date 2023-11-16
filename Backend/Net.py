@@ -4,6 +4,7 @@ import json
 import csv
 from tqdm import tqdm
 from torch.utils.data import Dataset
+import torch.nn.functional as F
 from math import radians, cos, sin, asin, sqrt
 
 
@@ -39,7 +40,7 @@ region_to_idx = load_csv_to_dict('region_indices.csv')
 # dataset
 class ImageDataset(Dataset):
     def __init__(self, json_file, transform=None):
-        with open(json_file, 'r') as file:
+        with open(json_file, 'r', encoding='utf-8') as file:
             data = json.load(file)
 
         self.data = {}
@@ -67,13 +68,32 @@ class ImageDataset(Dataset):
 
         return image, coord, country, region
 
+
 # loss functions for coord, country, and city/region
-def country_loss_fn(output, target):
-    return nn.CrossEntropyLoss()(output, target)
+def country_loss_fn(output, target, unknown_penalty=5):
+    loss = nn.CrossEntropyLoss()(output, target)
+    # Calculate additional penalty for predicting 'unknown'
+    unknown_index = 253  # Index for 'unknown'
+    predictions = torch.argmax(output, dim=1)
+    penalty_mask = (predictions == unknown_index)
+    penalty = torch.tensor(penalty_mask, dtype=torch.float).sum() * unknown_penalty
+
+    # Total loss is the sum of cross-entropy loss and penalty
+    total_loss = loss + penalty
+    return total_loss
 
 
-def region_loss_fn(output, target):
-    return nn.CrossEntropyLoss()(output, target)
+def region_loss_fn(output, target, unknown_penalty=50):
+    loss = nn.CrossEntropyLoss()(output, target)
+    # Calculate additional penalty for predicting 'unknown'
+    unknown_index = 4440  # Index for 'unknown'
+    predictions = torch.argmax(output, dim=1)
+    penalty_mask = (predictions == unknown_index)
+    penalty = torch.tensor(penalty_mask, dtype=torch.float32).sum() * unknown_penalty
+
+    # Total loss is the sum of cross-entropy loss and penalty
+    total_loss = loss + penalty
+    return total_loss
 
 
 # distance formula in meters
@@ -100,7 +120,7 @@ def distance_loss(output, target):
         # squared for larger loss on larger values
         total_loss += haversine(pred_lon, pred_lat, true_lon, true_lat)
 
-    return total_loss / (batch_size * 7550)
+    return total_loss / (batch_size * 100)
 
 
 # CNN model
@@ -116,13 +136,12 @@ class CNNModel(nn.Module):
         self.fc_city = nn.Linear(64 * 32 * 32, 4441)  # num_cities/regions
         self.fc_coord = nn.Linear(64 * 32 * 32, 2)
 
-    # todo: see if elu is possible(limitation: training time)
     def forward(self, x):
-        x = torch.relu(self.conv1(x))
+        x = F.elu(self.conv1(x))
         x = nn.MaxPool2d(kernel_size=2)(x)
-        x = torch.relu(self.conv2(x))
+        x = F.elu(self.conv2(x))
         x = nn.MaxPool2d(kernel_size=2)(x)
-        x = torch.relu(self.conv3(x))
+        x = F.elu(self.conv3(x))
         x = x.view(x.size(0), -1)  # Flatten
         country_pred = self.fc_country(x)
         region_pred = self.fc_city(x)

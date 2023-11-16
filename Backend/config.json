@@ -1,0 +1,7 @@
+{
+    "NUM_EPOCHS": 50,
+    "BATCH_SIZE": 64,
+    "PROCESSED_IMAGES_FILE": "processed_images_batch_1.json",
+    "LEARNING_RATE": 0.1,
+    "LR_DECAY": 0.00000001
+}
