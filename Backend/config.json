@@ -1,7 +1,7 @@
 {
     "NUM_EPOCHS": 50,
     "BATCH_SIZE": 96,
-    "PROCESSED_IMAGES_FILE": "processed_images_batch_3.json",
+    "PROCESSED_IMAGES_FILE": "processed_images_batch_4.json",
     "LEARNING_RATE": 0.1,
     "LR_DECAY": 0.00000001,
     "META_DATA_FILE": "r'C:\\Users\\safem\\PycharmProjects\\GeoPhotoLoco\\Backend\\MetaData\\train_val\\moscow\\database\\raw.csv'",

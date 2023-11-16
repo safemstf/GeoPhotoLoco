@@ -21,6 +21,12 @@ print("Parameters Chosen, Initializing...")
 
 # Initialize the model and optimizer
 model = CNNModel()
+if torch.cuda.is_available():
+    model.cuda()  # move to GPU
+    print("Using GPU: CUDA AVAILABLE")
+else:
+    print("not using GPU: CUDA Not Available")
+
 optimizer = optim.Adam(model.parameters(), lr=config['LEARNING_RATE'])
 scheduler = ExponentialLR(optimizer, gamma=config['LR_DECAY'])
 loss_fn = distance_loss, country_loss_fn, region_loss_fn
@@ -48,6 +54,7 @@ def TrainGeoPhotoLoco(resume=False):
     for epoch in range(NUM_EPOCHS):
         total_loss = 0
         for images, coords, countries, cities in tqdm(dataloader, desc=f"Epoch {epoch + 1}"):
+            images, coords, countries, cities = images.cuda(), coords.cuda(), countries.cuda(), cities.cuda()
             optimizer.zero_grad()
             country_pred, region_pred, coord_pred = model(images)
 
