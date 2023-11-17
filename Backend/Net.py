@@ -121,7 +121,7 @@ def distance_loss(output, target):
 
         # Check for out-of-range coordinates
         if abs(pred_lon) > 180 or abs(pred_lat) > 90:
-            total_loss += penalty_factor + haversine(pred_lon, pred_lat, true_lon, true_lat) ** 2
+            total_loss += penalty_factor + haversine(pred_lon, pred_lat, true_lon, true_lat) ** 3
         else:
             total_loss += haversine(pred_lon, pred_lat, true_lon, true_lat)
 
