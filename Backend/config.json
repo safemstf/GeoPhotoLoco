@@ -1,11 +1,15 @@
 {
     "NUM_EPOCHS": 50,
-    "BATCH_SIZE": 96,
-    "PROCESSED_IMAGES_FILE": "processed_images_batchBudapest_1.json",
+    "BATCH_SIZE": 284,
+
     "LEARNING_RATE": 10.0,
     "LR_DECAY": 0.000000001,
-    "META_DATA_FILE": "r'C:\\Users\\safem\\PycharmProjects\\GeoPhotoLoco\\Backend\\MetaData\\train_val\\moscow\\database\\raw.csv'",
-    "IMAGES_TO_TAG": "r'C:\\Users\\safem\\PycharmProjects\\GeoPhotoLoco\\Moscow_Images'",
-    "IMAGES_TAGGED": "r'C:\\Users\\safem\\PycharmProjects\\GeoPhotoLoco\\Backend\\Moscow_Tagged'",
-    "PROCESS_IMAGES_IN": "r'C:\\Users\\safem\\PycharmProjects\\GeoPhotoLoco\\Backend\\BudapestTagged'"
+
+    "PROCESSED_IMAGES_FILE": "processed_images_batch_7.json",
+
+    "META_DATA_FILE": "C:\\Users\\safem\\PycharmProjects\\GeoPhotoLoco\\Backend\\MetaData\\train_val\\Goa\\query\\raw.csv",
+    "IMAGES_TO_TAG": "C:\\Users\\safem\\PycharmProjects\\GeoPhotoLoco\\Goa_Images",
+    "IMAGES_TAGGED": "C:\\Users\\safem\\PycharmProjects\\GeoPhotoLoco\\Backend\\Goa_Tagged",
+
+    "PROCESS_IMAGES_IN": "C:\\Users\\safem\\PycharmProjects\\GeoPhotoLoco\\Backend\\Moscow_Tagged"
 }

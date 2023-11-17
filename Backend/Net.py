@@ -121,7 +121,7 @@ def distance_loss(output, target):
 
         # Check for out-of-range coordinates
         if abs(pred_lon) > 180 or abs(pred_lat) > 90:
-            total_loss += penalty_factor + haversine(pred_lon, pred_lat, true_lon, true_lat) ** 3
+            total_loss += penalty_factor * haversine(pred_lon, pred_lat, true_lon, true_lat) ** 4
         else:
             total_loss += haversine(pred_lon, pred_lat, true_lon, true_lat)
 
@@ -150,5 +150,5 @@ class CNNModel(nn.Module):
         x = x.view(x.size(0), -1)  # Flatten
         country_pred = self.fc_country(x)
         region_pred = self.fc_city(x)
-        coord_pred = self.fc_coord(x)
+        coord_pred = self.fc_coord(x) / 1000000
         return country_pred, region_pred, coord_pred

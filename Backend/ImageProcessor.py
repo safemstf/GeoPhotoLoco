@@ -40,7 +40,7 @@ def process_image(img_path):
 
 # loops through a folder of images with a given batch size to create a json file.
 # the images from process_images_in_folder are run through process_image(img_path)
-def process_images_in_folder(folder_path, json_base_path, BatchSize=2048):
+def process_images_in_folder(folder_path, json_base_path, BatchSize=5120):
     processed_data = {}
     BatchNuber = 1
     index = 0
