@@ -137,18 +137,29 @@ class CNNModel(nn.Module):
         self.conv2 = nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=1)
         self.conv3 = nn.Conv2d(64, 64, kernel_size=3, stride=1, padding=1)
 
-        self.fc_country = nn.Linear(64 * 32 * 32, 254)  # num_countries
-        self.fc_city = nn.Linear(64 * 32 * 32, 4441)  # num_cities/regions
-        self.fc_coord = nn.Linear(64 * 32 * 32, 2)
+        # Fully connected layers for country, region, and coordinates
+        self.fc_country = nn.Linear(64 * 32 * 32, 254)
+        self.fc_city = nn.Linear(64 * 32 * 32 + 254, 4441)  # Concatenate country output
+        self.fc_coord = nn.Linear(64 * 32 * 32 + 4441, 2)  # Concatenate region output
 
     def forward(self, x):
+        # Convolutional layers
         x = F.elu(self.conv1(x))
         x = nn.MaxPool2d(kernel_size=2)(x)
         x = F.elu(self.conv2(x))
         x = nn.MaxPool2d(kernel_size=2)(x)
         x = F.elu(self.conv3(x))
         x = x.view(x.size(0), -1)  # Flatten
+
+        # Country prediction
         country_pred = self.fc_country(x)
-        region_pred = self.fc_city(x)
-        coord_pred = self.fc_coord(x) / 1000000
+
+        # Region prediction (concatenate with country prediction)
+        region_input = torch.cat((x, country_pred), dim=1)
+        region_pred = self.fc_city(region_input)
+
+        # Coordinate prediction (concatenate with region prediction)
+        coord_input = torch.cat((x, region_pred), dim=1)
+        coord_pred = self.fc_coord(coord_input) / (1 * 10 ** 11)
+
         return country_pred, region_pred, coord_pred

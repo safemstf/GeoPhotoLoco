@@ -1,11 +1,11 @@
 {
     "NUM_EPOCHS": 50,
-    "BATCH_SIZE": 284,
+    "BATCH_SIZE": 96,
 
-    "LEARNING_RATE": 10.0,
+    "LEARNING_RATE": 40.0,
     "LR_DECAY": 0.000000001,
 
-    "PROCESSED_IMAGES_FILE": "processed_images_batch_7.json",
+    "PROCESSED_IMAGES_FILE": "processed_images_batchGoa_1.json",
 
     "META_DATA_FILE": "C:\\Users\\safem\\PycharmProjects\\GeoPhotoLoco\\Backend\\MetaData\\train_val\\Goa\\query\\raw.csv",
     "IMAGES_TO_TAG": "C:\\Users\\safem\\PycharmProjects\\GeoPhotoLoco\\Goa_Images",
