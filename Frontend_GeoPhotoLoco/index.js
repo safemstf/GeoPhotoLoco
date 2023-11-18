@@ -50,6 +50,9 @@ imageContainer.addEventListener('drop', (event) => {
 
         imageContainer.innerHTML = ''; // Clear the previous content
         imageContainer.appendChild(imageElement);
+
+        // Send the image to the Flask API
+        sendImageToAPI(file);
       };
     };
 
@@ -58,3 +61,20 @@ imageContainer.addEventListener('drop', (event) => {
     alert('Please drop a valid image file (JPEG, JPG, or PNG).');
   }
 });
+
+function sendImageToAPI(imageFile) {
+  const formData = new FormData();
+  formData.append('file', imageFile);
+
+  fetch('http://127.0.0.1:5000/send_data', {
+    method: 'POST',
+    body: formData,
+  })
+    .then(response => response.json())
+    .then(data => {
+      console.log(data); // Handle the response from the server
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+}
