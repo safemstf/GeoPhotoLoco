@@ -11,7 +11,7 @@ bbox_df.columns = ['Country', 'Region', 'BBox']
 config = load_config(r'C:\Users\safem\PycharmProjects\GeoPhotoLoco\Backend\config.json')
 
 folder_path = config["PROCESS_IMAGES_IN"]  # PC SPECIFIC
-json_base_path = 'processed_images_batchBudapest'
+json_base_path = config["PROCESS_IMAGES_TO"]
 
 
 def point_in_bbox(lat, lon, bbox):
@@ -52,8 +52,7 @@ def process_images_in_folder(folder_path, json_base_path, BatchSize=5120):
         img_path = os.path.join(folder_path, filename)
         processed_tensors = process_image(img_path).tolist()
 
-        # Extract coordinates from filename (may need to change with different data files)
-        # change here to lat_lon from csv or whatever needed
+        # Extract coordinates from filename
         lat_lon = filename.rsplit('.', 1)[0]
         lat, lon = map(float, lat_lon.split(','))
         country, region = find_country_region(lat, lon, bbox_df)

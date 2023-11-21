@@ -15,7 +15,7 @@ logging.basicConfig(filename='training.log', level=logging.INFO, format='%(ascti
 config = load_config(r'C:\Users\safem\PycharmProjects\GeoPhotoLoco\Backend\config.json')  # PC SPECIFIC
 NUM_EPOCHS = config['NUM_EPOCHS']
 BATCH_SIZE = config['BATCH_SIZE']
-PROCESSED_IMAGES_FILE = config["PROCESSED_IMAGES_FILE"]
+PROCESSED_IMAGES_FILE = config["TRAIN_IMAGES_FILE"]
 
 print("Parameters Chosen, Initializing...")
 
@@ -27,7 +27,7 @@ if torch.cuda.is_available():
 else:
     print("not using GPU: CUDA Not Available")
 
-optimizer = optim.Adam(model.parameters(), lr=config['LEARNING_RATE'])
+optimizer = optim.Adam(model.parameters(), lr=config['LEARNING_RATE'])  # learning rates 10 and higher make huge losses.
 scheduler = ExponentialLR(optimizer, gamma=config['LR_DECAY'])
 loss_fn = distance_loss, country_loss_fn, region_loss_fn
 
@@ -69,6 +69,7 @@ def TrainGeoPhotoLoco(resume=False):
 
             total_loss = country_loss + region_loss + coord_loss
             total_loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
             optimizer.step()
             scheduler.step()
 
