@@ -14,7 +14,7 @@
     "PROCESS_IMAGES_IN": "C:\\Users\\safem\\PycharmProjects\\GeoPhotoLoco\\Backend\\OrganizedImageBatches\\batch_13",
     "PROCESS_IMAGES_TO": "AmsterdamBudapestMoscow13",
 
-    "MODEL_PATH": "C:\\Users\\safem\\PycharmProjects\\GeoPhotoLoco\\Backend\\model.pth",
-    "TEST_IMAGES": "C:\\Users\\safem\\PycharmProjects\\GeoPhotoLoco\\Backend\\TestImages"
+    "MODEL_PATH": "/home/da0290/Documents/GitHub/GeoPhotoLoco/Backend/model.pth",
+    "TEST_IMAGES": "/home/da0290/Documents/GitHub/GeoPhotoLoco/Backend/TestImages"
 
 }

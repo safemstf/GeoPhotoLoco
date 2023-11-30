@@ -7,7 +7,7 @@ import pandas as pd
 from config_loader import load_config
 from Net import CNNModel, country_to_idx, region_to_idx  # Import your CNN model class
 
-config = load_config(r'C:\Users\safem\PycharmProjects\GeoPhotoLoco\Backend\config.json')
+config = load_config(r'/home/da0290/Documents/GitHub/GeoPhotoLoco/Backend/config.json')
 
 # Paths from the config file
 model_file_path = config["MODEL_PATH"]
@@ -98,18 +98,17 @@ def process_predictions(country_pred, region_pred, coord_pred):
 # Main function to handle model loading and prediction
 def main(interval=10):
     model = load_trained_model(model_file_path)
-    img_path = find_most_recent_image(test_images_folder)
-
-    # Extract true values from the image filename
-    filename = os.path.basename(img_path)
-    lat_lon = filename.rsplit('.', 1)[0]
-    last_processed = None
-
+    processed_images = set()
     while True:
+        img_path = find_most_recent_image(test_images_folder)
+        # Extract true values from the image filename
+        filename = os.path.basename(img_path)
+        lat_lon = filename.rsplit('.', 1)[0]
+        last_processed = None
         try:
             img_path = find_most_recent_image(test_images_folder)
-            if img_path != last_processed:
-                last_processed = img_path
+            if img_path != last_processed and img_path not in processed_images:
+                processed_images.add(img_path)
                 try:
                     true_lat, true_lon = map(float, lat_lon.split(','))
                     true_country, true_region = get_true_country_region(lat_lon, bbox_df)
@@ -129,7 +128,8 @@ def main(interval=10):
                 processed_prediction['True Country'] = true_country
                 processed_prediction['True Region'] = true_region
 
-                return processed_prediction
+                print(processed_prediction)
+                # return processed_prediction
 
             else:
                 print("No new images to process.")
