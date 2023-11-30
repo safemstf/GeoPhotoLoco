@@ -80,11 +80,11 @@ def TrainGeoPhotoLoco(resume=False):
             pred_regions.extend(torch.argmax(region_pred, dim=1).tolist())
 
             # Logging evaluation data
-            logging.info(f"True Countries: {true_countries}")
-            logging.info(f"Predicted Countries: {pred_countries}")
-            logging.info(f"True Regions: {true_regions}")
-            logging.info(f"Predicted Regions: {pred_regions}")
-            logging.info(f"True Coords: {coords}, Predicted Coords: {coord_pred}")
+            # logging.info(f"True Countries: {true_countries}")
+            # logging.info(f"Predicted Countries: {pred_countries}")
+            # logging.info(f"True Regions: {true_regions}")
+            # logging.info(f"Predicted Regions: {pred_regions}")
+            # logging.info(f"True Coords: {coords}, Predicted Coords: {coord_pred}")
             logging.info(f"Coord Loss: {coord_loss}")
             logging.info(f" Total Loss {total_loss}")
 
