@@ -1,15 +1,20 @@
 {
-    "NUM_EPOCHS": 50,
-    "BATCH_SIZE": 96,
+    "NUM_EPOCHS": 250,
+    "BATCH_SIZE": 25,
 
-    "LEARNING_RATE": 40.0,
-    "LR_DECAY": 0.000000001,
+    "LEARNING_RATE": 0.001,
+    "LR_DECAY": 0.00000001,
 
-    "PROCESSED_IMAGES_FILE": "processed_images_batchGoa_1.json",
+    "TRAIN_IMAGES_FILE": "AmsterdamBudapestMoscow13_1.json",
 
     "META_DATA_FILE": "C:\\Users\\safem\\PycharmProjects\\GeoPhotoLoco\\Backend\\MetaData\\train_val\\Goa\\query\\raw.csv",
     "IMAGES_TO_TAG": "C:\\Users\\safem\\PycharmProjects\\GeoPhotoLoco\\Goa_Images",
     "IMAGES_TAGGED": "C:\\Users\\safem\\PycharmProjects\\GeoPhotoLoco\\Backend\\Goa_Tagged",
 
-    "PROCESS_IMAGES_IN": "C:\\Users\\safem\\PycharmProjects\\GeoPhotoLoco\\Backend\\Moscow_Tagged"
+    "PROCESS_IMAGES_IN": "C:\\Users\\safem\\PycharmProjects\\GeoPhotoLoco\\Backend\\OrganizedImageBatches\\batch_13",
+    "PROCESS_IMAGES_TO": "AmsterdamBudapestMoscow13",
+
+    "MODEL_PATH": "/home/da0290/Documents/GitHub/GeoPhotoLoco/Backend/model.pth",
+    "TEST_IMAGES": "/home/da0290/Documents/GitHub/GeoPhotoLoco/Backend/TestImages"
+
 }

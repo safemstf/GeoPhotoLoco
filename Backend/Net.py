@@ -8,23 +8,6 @@ import torch.nn.functional as F
 from math import radians, cos, sin, asin, sqrt
 
 
-# # transform options:
-# Basic Transforms:
-#
-# transforms.Resize((width, height)): Resizes the image to the specified size.
-# transforms.CenterCrop(size): Crops the center of the image to the given size.
-# transforms.ToTensor(): Converts a PIL image or NumPy ndarray to a PyTorch tensor.
-
-# Augmentation Transforms (useful for increasing dataset variability):
-
-# transforms.RandomHorizontalFlip(): Horizontally flips the image randomly with a given probability.
-# transforms.RandomRotation(degrees): Rotates the image by a random angle within the specified range.
-# transforms.ColorJitter(): Randomly changes the brightness, contrast, and saturation of an image.
-
-# Composing Transforms:
-# Transforms can be composed using
-# transforms.Compose([transforms]), where transforms is a list of transformations applied sequentially.
-
 def load_csv_to_dict(file_path):
     with open(file_path, mode='r', encoding='utf-8') as csvfile:
         reader = csv.reader(csvfile)
@@ -121,11 +104,11 @@ def distance_loss(output, target):
 
         # Check for out-of-range coordinates
         if abs(pred_lon) > 180 or abs(pred_lat) > 90:
-            total_loss += penalty_factor * haversine(pred_lon, pred_lat, true_lon, true_lat) ** 4
+            total_loss += penalty_factor / 100
         else:
-            total_loss += haversine(pred_lon, pred_lat, true_lon, true_lat)
+            total_loss += haversine(pred_lon, pred_lat, true_lon, true_lat) / 100
 
-    return total_loss / (batch_size * 100)
+    return total_loss / batch_size
 
 
 # CNN model
@@ -133,14 +116,14 @@ class CNNModel(nn.Module):
     def __init__(self):
         super(CNNModel, self).__init__()
         # kernel_size=3 each filter is 3x3. Odd numbers have a central pixel. Good for spatial reference
-        self.conv1 = nn.Conv2d(3, 32, kernel_size=3, stride=1, padding=1)
-        self.conv2 = nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=1)
-        self.conv3 = nn.Conv2d(64, 64, kernel_size=3, stride=1, padding=1)
+        self.conv1 = nn.Conv2d(3, 32, kernel_size=3, stride=1, padding=3)
+        self.conv2 = nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=3)
+        self.conv3 = nn.Conv2d(64, 64, kernel_size=3, stride=2, padding=3)
 
         # Fully connected layers for country, region, and coordinates
-        self.fc_country = nn.Linear(64 * 32 * 32, 254)
-        self.fc_city = nn.Linear(64 * 32 * 32 + 254, 4441)  # Concatenate country output
-        self.fc_coord = nn.Linear(64 * 32 * 32 + 4441, 2)  # Concatenate region output
+        self.fc_country = nn.Linear(25600, 254)
+        self.fc_city = nn.Linear(25600 + 254, 4441)  # Concatenate country output
+        self.fc_coord = nn.Linear(25600 + 4441, 2)  # Concatenate region output
 
     def forward(self, x):
         # Convolutional layers
@@ -160,6 +143,6 @@ class CNNModel(nn.Module):
 
         # Coordinate prediction (concatenate with region prediction)
         coord_input = torch.cat((x, region_pred), dim=1)
-        coord_pred = self.fc_coord(coord_input) / (1 * 10 ** 11)
+        coord_pred = self.fc_coord(coord_input)
 
         return country_pred, region_pred, coord_pred
