@@ -1,14 +1,13 @@
 body {
   background-image: url("wallhaven-kxj3l1.jpg");
-  background-repeat: no-repeat; /* Prevent image from repeating */
-  background-size: cover; /* Cover the entire background */
+  background-size: cover;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 100vh;
   margin: 0;
-  animation: scrollBackground 20s linear infinite; /* Adjust the animation duration as needed */
+  animation: scrollBackground 20s linear infinite; /* make this scroll back and forth */
 }
 
 @keyframes scrollBackground {
@@ -19,6 +18,7 @@ body {
     background-position: 100% 0%;
   }
 }
+
 .heading-container{
   width: 100%;
   display: flex;
@@ -28,7 +28,7 @@ body {
   background-color: rgba(255, 255, 255, 0.5);
 }
 
-.image-container{
+.map-container{
   border: 2px dashed rgba(0,0,0,.5);
   width: 80%;
   display: flex;
@@ -40,11 +40,11 @@ body {
 
 .shadow-border {
   border: 2px dashed #000;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Shadow effect */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* shadow effect */
 }
 
 .image-container.drag-over {
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Shadow effect when dragged over */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* shadow effect when dragged over */
 }
 
 footer{
@@ -55,3 +55,5 @@ footer{
   align-items: center;
   background-color: rgba(255, 255, 255, 0.5);
 }
+
+/*(image-container, map-container), (image-container, map-container)

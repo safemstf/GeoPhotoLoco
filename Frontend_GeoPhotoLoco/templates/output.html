@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" crossorigin=""/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
+    <title>GeoPhotoLoco</title>
+</head>
+
+<body>
+    <div class="heading-container">
+        <h1>GeoPhotoLoco</h1>
+        <h2>Check out your estimated coordinates below!</h2>
+    </div>
+    
+    <div class="map-container" id="map"></div>
+    
+    <footer>
+        This is the footer
+    </footer>
+    
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js" crossorigin=""></script>
+    <script src="{{ url_for('static', filename='js/output.js') }}"></script>
+</body>
+</html>
