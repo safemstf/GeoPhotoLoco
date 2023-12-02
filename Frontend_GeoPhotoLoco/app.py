@@ -1,10 +1,8 @@
 from flask import Flask, render_template, Blueprint, jsonify, request
-from flask_cors import CORS
 from threading import Thread
 import os, subprocess, time
 last_processed_data = None
 app = Flask(__name__, static_folder='static')
-CORS(app)
 
 # Your existing routes
 @app.route('/input')
