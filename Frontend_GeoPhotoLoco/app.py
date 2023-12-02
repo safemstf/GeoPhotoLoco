@@ -1,6 +1,6 @@
 from flask import Flask, render_template, Blueprint, jsonify, request
 from threading import Thread
-import os, subprocess, time
+import os, subprocess, time, json
 last_processed_data = None
 app = Flask(__name__, static_folder='static')
 
@@ -62,8 +62,15 @@ def run_model():
 
             # Check if the new data is different from the last processed data
             if captured_output != last_processed_data:
-                last_processed_data = captured_output  # Update the last processed data
-                print("New Data:", captured_output)
+                # Parse the JSON string into a dictionary
+                processed_data = json.loads(captured_output)
+
+                # Update the last processed data dictionary
+                last_processed_data = {
+                    'processed_data': processed_data,
+                    'timestamp': time.time()  # You can add more fields if needed
+                }
+                print("New Data:", last_processed_data)
 
             time.sleep(2)
             

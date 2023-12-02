@@ -122,9 +122,9 @@ def main(interval=2):
                 processed_prediction = process_predictions(country_pred, region_pred, coord_pred)
 
                 # Add true values to the output
-                processed_prediction['True Coordinates'] = [true_lat, true_lon] if true_lat != 'Unknown' else 'Unknown'
-                processed_prediction['True Country'] = true_country
-                processed_prediction['True Region'] = true_region
+                processed_prediction['True_Coordinates'] = [true_lat, true_lon] if true_lat != 'Unknown' else 'Unknown'
+                processed_prediction['True_Country'] = true_country
+                processed_prediction['True_Region'] = true_region
 
                 return processed_prediction
 

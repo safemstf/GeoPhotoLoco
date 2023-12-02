@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" crossorigin=""/>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
+    <style>
+        #result-display {
+            white-space: pre-line;
+        }
+    </style>
     <title>GeoPhotoLoco</title>
 </head>
 
@@ -15,12 +20,13 @@
     </div>
     
     <div class="map-container" id="map"></div>
-    
-    <footer>
-        This is the footer
-    </footer>
+        
+    <footer class="result-container" id="result-container">
+        <h1 id="result-display"></h1>
+      </footer>
     
     <script src="https://unpkg.com/leaflet/dist/leaflet.js" crossorigin=""></script>
+    <script src="https://unpkg.com/@turf/turf@latest"></script>
     <script src="{{ url_for('static', filename='js/output.js') }}"></script>
 </body>
 </html>
