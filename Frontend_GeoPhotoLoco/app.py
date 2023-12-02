@@ -1,7 +1,10 @@
 from flask import Flask, render_template, Blueprint, jsonify, request
-import os
-
+from flask_cors import CORS
+from threading import Thread
+import os, subprocess, time
+last_processed_data = None
 app = Flask(__name__, static_folder='static')
+CORS(app)
 
 # Your existing routes
 @app.route('/input')
@@ -26,7 +29,7 @@ def send_data():
         if file.filename == '':
             return jsonify({'error': 'No selected file'})
 
-        upload_folder = 'image_uploads'
+        upload_folder = '../Backend/TestImages'
         if not os.path.exists(upload_folder):
             os.makedirs(upload_folder)
 
@@ -40,5 +43,38 @@ def send_data():
 # Register the blueprint with the app
 app.register_blueprint(send_data_blueprint)
 
+
+get_data_blueprint = Blueprint('get_data', __name__)
+
+@get_data_blueprint.route('/get_data', methods=['GET'], endpoint='get_data')
+def get_data():
+    # Your logic to retrieve and return data
+    data = {'message': last_processed_data}
+    return jsonify(data)
+
+app.register_blueprint(get_data_blueprint)
+
+# Function to run TestModel.py as a subprocess
+def run_model():
+    global last_processed_data  # Use the global variable to store the last processed data
+    while True:
+        try:
+            result = subprocess.run(["python3", "/home/demir/Documents/GitHub/GeoPhotoLoco/Backend/TestModel.py"], stdout=subprocess.PIPE, text=True)
+            captured_output = result.stdout
+
+            # Check if the new data is different from the last processed data
+            if captured_output != last_processed_data:
+                last_processed_data = captured_output  # Update the last processed data
+                print("New Data:", captured_output)
+
+            time.sleep(2)
+            
+        except Exception as e:
+            print(f"Error running TestModel.py: {e}")
+
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    test_model_thread = Thread(target=run_model)
+    test_model_thread.start()
+    # Start the Flask app
+    app.run(debug=True, use_reloader=False)

@@ -16,8 +16,8 @@ def load_csv_to_dict(file_path):
 
 
 # Load the CSV files
-country_to_idx = load_csv_to_dict('country_indices.csv')
-region_to_idx = load_csv_to_dict('region_indices.csv')
+country_to_idx = load_csv_to_dict('/home/demir/Documents/GitHub/GeoPhotoLoco/Backend/country_indices.csv')
+region_to_idx = load_csv_to_dict('/home/demir/Documents/GitHub/GeoPhotoLoco/Backend/region_indices.csv')
 
 
 # dataset
