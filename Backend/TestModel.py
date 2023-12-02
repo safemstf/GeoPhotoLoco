@@ -7,7 +7,7 @@ import pandas as pd
 from config_loader import load_config
 from Net import CNNModel, country_to_idx, region_to_idx  # Import your CNN model class
 
-config = load_config(r'/home/da0290/Documents/GitHub/GeoPhotoLoco/Backend/config.json')
+config = load_config(r'/home/demir/Documents/GitHub/GeoPhotoLoco/Backend/config.json')
 
 # Paths from the config file
 model_file_path = config["MODEL_PATH"]
@@ -15,7 +15,7 @@ test_images_folder = config["TEST_IMAGES"]
 
 idx_to_country = {value: key for key, value in country_to_idx.items()}  # Reverse your existing country_to_idx
 idx_to_region = {value: key for key, value in region_to_idx.items()}  # Reverse your existing region_to_idx
-bbox_df = pd.read_csv('BBoxCountriesCities.csv')
+bbox_df = pd.read_csv('/home/demir/Documents/GitHub/GeoPhotoLoco/Backend/BBoxCountriesCities.csv')
 bbox_df.columns = ['Country', 'Region', 'BBox']
 
 
@@ -76,7 +76,6 @@ def predict(model, img_tensor):
 
     return country_pred, region_pred, coord_pred
 
-
 def process_predictions(country_pred, region_pred, coord_pred):
     # Convert indices to actual names
     country_idx = torch.argmax(country_pred, dim=1).item()
@@ -94,9 +93,8 @@ def process_predictions(country_pred, region_pred, coord_pred):
         "Coordinates": coordinates
     }
 
-
 # Main function to handle model loading and prediction
-def main(interval=10):
+def main(interval=2):
     model = load_trained_model(model_file_path)
     processed_images = set()
     while True:
@@ -124,12 +122,11 @@ def main(interval=10):
                 processed_prediction = process_predictions(country_pred, region_pred, coord_pred)
 
                 # Add true values to the output
-                processed_prediction['True Coordinates'] = [true_lat, true_lon] if true_lat != 'Unknown' else 'Unknown'
-                processed_prediction['True Country'] = true_country
-                processed_prediction['True Region'] = true_region
+                processed_prediction['True_Coordinates'] = [true_lat, true_lon] if true_lat != 'Unknown' else 'Unknown'
+                processed_prediction['True_Country'] = true_country
+                processed_prediction['True_Region'] = true_region
 
-                print(processed_prediction)
-                # return processed_prediction
+                return processed_prediction
 
             else:
                 print("No new images to process.")
@@ -141,5 +138,5 @@ def main(interval=10):
 
 # Example usage
 if __name__ == "__main__":
-    prediction = main(interval=10)
+    prediction = main(interval=2)
     print(json.dumps(prediction, indent=4))
