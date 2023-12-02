@@ -1,2 +1,8 @@
 *.jpg
 Backend/model.pth
+Frontend_GeoPhotoLoco/geophotoloco/bin/
+Frontend_GeoPhotoLoco/geophotoloco/lib/
+
+Frontend_GeoPhotoLoco/geophotoloco/lib64
+Frontend_GeoPhotoLoco/geophotoloco/pyvenv.cfg
+Frontend_GeoPhotoLoco/geophotoloco/share/man/man1/isympy.1
