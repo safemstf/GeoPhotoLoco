@@ -7,15 +7,26 @@ import pandas as pd
 from config_loader import load_config
 from Net import CNNModel, country_to_idx, region_to_idx  # Import your CNN model class
 
-config = load_config(r'/home/demir/Documents/GitHub/GeoPhotoLoco/Backend/config.json')
+
+current_directory = os.getcwd()
+
+# Construct the path to the target file one directory up
+config = os.path.join(os.path.dirname(current_directory), "Backend", "config.json")
+
+config = load_config(config)
 
 # Paths from the config file
-model_file_path = config["MODEL_PATH"]
-test_images_folder = config["TEST_IMAGES"]
+modelFile = os.path.join(os.path.dirname(current_directory), "Backend", "model.pth")
+testImageFolder = os.path.join(os.path.dirname(current_directory), "Backend", "TestImages")
+
+model_file_path = modelFile
+test_images_folder = testImageFolder
 
 idx_to_country = {value: key for key, value in country_to_idx.items()}  # Reverse your existing country_to_idx
 idx_to_region = {value: key for key, value in region_to_idx.items()}  # Reverse your existing region_to_idx
-bbox_df = pd.read_csv('/home/demir/Documents/GitHub/GeoPhotoLoco/Backend/BBoxCountriesCities.csv')
+
+BBoxFile = os.path.join(os.path.dirname(current_directory), "Backend", "BBoxCountriesCities.csv")
+bbox_df = pd.read_csv(BBoxFile)
 bbox_df.columns = ['Country', 'Region', 'BBox']
 
 

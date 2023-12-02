@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import json
 import csv
+import os
 from tqdm import tqdm
 from torch.utils.data import Dataset
 import torch.nn.functional as F
@@ -15,9 +16,16 @@ def load_csv_to_dict(file_path):
         return {rows[0]: int(rows[1]) for rows in reader}
 
 
-# Load the CSV files
-country_to_idx = load_csv_to_dict('/home/demir/Documents/GitHub/GeoPhotoLoco/Backend/country_indices.csv')
-region_to_idx = load_csv_to_dict('/home/demir/Documents/GitHub/GeoPhotoLoco/Backend/region_indices.csv')
+# Load the CSV files            
+# Get the current working directory
+current_directory = os.getcwd()
+
+# Construct the path to the target file one directory up
+country_indices = os.path.join(os.path.dirname(current_directory), "Backend", "country_indices.csv")
+region_indices = os.path.join(os.path.dirname(current_directory), "Backend", "region_indices.csv")
+
+country_to_idx = load_csv_to_dict(country_indices)
+region_to_idx = load_csv_to_dict(region_indices)
 
 
 # dataset

@@ -57,7 +57,14 @@ def run_model():
     global last_processed_data  # Use the global variable to store the last processed data
     while True:
         try:
-            result = subprocess.run(["python3", "/home/demir/Documents/GitHub/GeoPhotoLoco/Backend/TestModel.py"], stdout=subprocess.PIPE, text=True)
+            # Get the current working directory
+            current_directory = os.getcwd()
+
+            # Construct the path to the target file one directory up
+            target_file_path = os.path.join(os.path.dirname(current_directory), "Backend", "TestModel.py")
+
+            # Run the subprocess with the dynamic path
+            result = subprocess.run(["python3", target_file_path], stdout=subprocess.PIPE, text=True)
             captured_output = result.stdout
 
             # Check if the new data is different from the last processed data
